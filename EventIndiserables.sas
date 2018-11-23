@@ -48,30 +48,28 @@ DATA AE_SUBJECT(where=(USUBJID='0560541'));
   	rowid=_n_;
 RUN;
 
-title 'Adverse Events for Patient Id = #USUBJID';
-ods graphics / reset width=5in height=3in imagename="Fig: AE Timeline of...";
+ods graphics / reset width=8in height=3in;
 proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
    /*--Draw the events--*/
    vector x=ae_stop_date y=rowid / xorigin=ae_start_date yorigin=rowid noarrowheads lineattrs=(thickness=9px) transparency=0 group=aesev name='sev';
-
 
    /*--Draw start and end events--*/
    scatter x=ae_start_date y=rowid / markerattrs=(size=13px symbol=circlefilled) group=aesev;
    scatter x=ae_stop_date y=rowid / markerattrs=(size=13px symbol=circlefilled) group=aesev;
 
-   /*--Draw the event name using non-proportional font--*/ 
-   /*scatter x=ae_start_date y=rowid / markerchar=buffer markercharattrs=(family='Lucida Console' size=9);*/
-
-   /*--Assign dummy plot to create independent X2 axis--*/
+   /* Assign the plot to create a x2 axis */
    scatter x=ae_start_date y=rowid /  markerattrs=(size=0) x2axis;
 
-   /*--Assign axis properties data extents and offsets--*/
+   /* Assign axis properties data extents and offsets to the y axis */
    yaxis display=(nolabel noticks novalues) min=0;
    
-   /* Add a bar on 0 of the x axis */
-   refline 0 / axis=x lineattrs=(thickness=1 color=black);
+   /* Draw the legend */
+   keylegend 'sev' / title='Severity :';
+RUN;
 
-   /*--Draw the legend--*/
-   keylegend 'sev'/ title='Severity :';
-
+ods graphics / reset width=8in;
+PROC SGPANEL DATA=AE;
+   PANELBY TRTDESC / NOVARNAME COLUMNS=3;
+   HBAR SOCTERM / STAT=FREQ nostatlabel CATEGORYORDER=RESPDESC baselineattrs=(thickness=0) seglabel seglabelattrs=(size=7);
+   rowaxis display=(noline nolabel) valueattrs=(size=7);
 RUN;
