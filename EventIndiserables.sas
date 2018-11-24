@@ -53,13 +53,13 @@ PROC SORT; BY ae_start_date;
 RUN;
 
 title "Adverse Events for Patient Id = &subject_id";
-ods graphics / reset width=8in height=3in;
+ods graphics / reset width=8in height=6in;
 proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
    /*--Draw the events--*/
    vector x=ae_stop_date y=rowid / xorigin=ae_start_date yorigin=rowid noarrowheads lineattrs=(thickness=9px) transparency=0 group=aesev name='sev';
 
    /*--Draw start and end events--*/
-   scatter x=ae_start_date y=rowid / markerattrs=(size=13px symbol=circlefilled) group=aesev;
+   scatter x=ae_start_date y=rowid / markerattrs=(size=13px symbol=circlefilled) group=aesev datalabel=aeterm;
    scatter x=ae_stop_date y=rowid / markerattrs=(size=13px symbol=circlefilled) group=aesev;
 
    /* Assign the plot to create a x2 axis */
