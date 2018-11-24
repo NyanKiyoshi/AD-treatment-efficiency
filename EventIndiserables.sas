@@ -78,3 +78,7 @@ PROC SGPANEL DATA=AE;
    HBAR SOCTERM / STAT=FREQ nostatlabel CATEGORYORDER=RESPDESC baselineattrs=(thickness=0) seglabel seglabelattrs=(size=7);
    rowaxis display=(noline nolabel) valueattrs=(size=7);
 RUN;
+
+PROC FREQ DATA=AE;
+    TABLES SOCTERM * TRTCD;
+RUN;
