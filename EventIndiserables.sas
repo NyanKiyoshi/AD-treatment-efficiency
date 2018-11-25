@@ -63,10 +63,15 @@ IF mark1 AND ae_start_date >= firstVisitDt THEN OUTPUT;
 
 RUN;
 
-DATA AE_SUBJECT(where=(USUBJID='0560541'));
+/* Retrieve the given subject */
+DATA AE_SUBJECT(where=(USUBJID='0860827'));
    SET AE;
+RUN;
+
+/* Create the rowid of each and create macros */
+DATA AE_SUBJECT;
+   SET AE_SUBJECT;
    rowid=_n_;
-   CALL SYMPUT('subject_id', USUBJID);
    CALL SYMPUT('ae_start_date', ae_start_date);
    CALL SYMPUT('lastVisitDt', lastVisitDt);
    CALL SYMPUT('firstVisitDt', firstVisitDt);
@@ -82,7 +87,7 @@ RUN;
 PROC SORT; BY ae_start_date;
 RUN;
 
-title "Adverse Events for Patient Id = &subject_id";
+title 'Adverse events for subject';
 ods graphics / reset width=8in height=6in;
 proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
    /*--Draw the events--*/
@@ -111,6 +116,7 @@ proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
    discretelegend 'last_visit_line' 'treatment_start' / location=inside title='Legend' across=1;
 RUN;
 
+TITLE 'Propotion des SOC termes';
 ods graphics / reset width=8in;
 PROC SGPANEL DATA=AE;
    PANELBY TRTDESC / NOVARNAME COLUMNS=3;
