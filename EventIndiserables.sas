@@ -1,11 +1,5 @@
 %INCLUDE '/folders/myfolders/MiniProjet/main.sas';
 
-/* Import the dataset `adverse_event` */
-DATA AE;
-SET SOURCE.ADVERSE_EVENT
-   SOURCE.DATE_OF_VISIT
-   SOURCE.TREATMENT_ASSIGNMENT;
-
 /* Pre-sort the data to ensure it's sorted by subject ID,
  * Otherwise we won't be able to merge the data later on. */
 PROC SORT; BY USUBJID;
