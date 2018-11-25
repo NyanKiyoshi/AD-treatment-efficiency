@@ -72,6 +72,13 @@ DATA AE_SUBJECT(where=(USUBJID='0560541'));
    CALL SYMPUT('firstVisitDt', firstVisitDt);
 RUN;
 
+/* Retrieve the last AE of this subject */
+PROC SQL NOPRINT;
+    select max(ae_stop_date) INTO :max_ae_stop_date from AE_SUBJECT;
+    %put &max_ae_stop_date;
+RUN;
+
+/* Sort the subject AE by start date */
 PROC SORT; BY ae_start_date;
 RUN;
 
@@ -94,7 +101,7 @@ proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
    refline treatment_start_date / axis=x lineattrs=(color=orange thickness=3px) name='treatment_start' legendlabel='Treatment Start';
 
    /* Set the x axis values and grid with a per month interval */
-   xaxis values=(&firstVisitDt to &lastVisitDt) grid type=time interval=month offsetmax=.1;
+   xaxis values=(&firstVisitDt to &max_ae_stop_date) grid type=time interval=month offsetmax=.1;
 
    /* Assign axis properties data extents and offsets to the y axis */
    yaxis display=(nolabel noticks novalues) min=0;
