@@ -22,11 +22,12 @@ MERGE
    BY USUBJID;
 
 /* Declare the date variables */
-FORMAT ae_start_date ae_stop_date ddmmyyd10.;
+FORMAT ae_start_date ae_stop_date treatment_start_date ddmmyyd10.;
 
 /* Copy dates to our custom variables */
 ae_start_date = AESTDT;
 ae_stop_date = AEENDT;
+treatment_start_date = datepart(ASGNDTTM);
 
 /* Default the start date to the 1st January of the current year */
 if ae_start_date=. then do;
@@ -59,8 +60,11 @@ proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
    vector x=ae_stop_date y=rowid / xorigin=ae_start_date yorigin=rowid noarrowheads lineattrs=(thickness=9px) transparency=0 group=aesev name='sev';
 
    /*--Draw start and end events--*/
-   scatter x=ae_start_date y=rowid / markerattrs=(size=13px symbol=circlefilled) group=aesev datalabel=aeterm;
-   scatter x=ae_stop_date y=rowid / markerattrs=(size=13px symbol=circlefilled) group=aesev;
+   scatter x=ae_start_date y=rowid / markerattrs=(size=9px symbol=circlefilled) group=aesev datalabel=aeterm;
+   scatter x=ae_stop_date y=rowid / markerattrs=(size=9px symbol=circlefilled) group=aesev;
+   
+   scatter x=VISDT y=rowid / markerattrs=(size=13px symbol=diamondfilled color=coral) name='visdt' legendlabel='Last Visit';
+   scatter x=treatment_start_date y=rowid / markerattrs=(size=13px symbol=starfilled color=goldenrod) name='trtst' legendlabel='Treatment Start';
 
    /* Assign the plot to create a x2 axis */
    scatter x=ae_start_date y=rowid /  markerattrs=(size=0) x2axis;
@@ -70,6 +74,7 @@ proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
 
    /* Draw the legend */
    keylegend 'sev' / title='Severity:';
+   discretelegend 'visdt' 'trtst' / location=inside title='Legend' across=1;
 RUN;
 
 ods graphics / reset width=8in;
