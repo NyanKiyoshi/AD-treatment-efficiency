@@ -1,9 +1,5 @@
 %INCLUDE '/folders/myfolders/MiniProjet/main.sas';
 
-/* Pre-sort the data to ensure it's sorted by subject ID,
- * Otherwise we won't be able to merge the data later on. */
-PROC SORT; BY USUBJID;
-
 /* Retrieve the first visit per subject */
 PROC SQL;
     create table firstVisits as
@@ -23,7 +19,7 @@ PROC SQL;
 RUN;
 
 /* Create a `AE` dataset on the workspace */
-DATA AE;
+DATA result.AE;
 
 /* Merge the date of visit and the treatment groupe with the AE.
  * And ensure we keep the data ordered by subject identifier. */
@@ -59,7 +55,7 @@ RUN;
 
 /* Retrieve the given subject */
 DATA AE_SUBJECT(where=(USUBJID='0860827'));
-   SET AE;
+   SET result.AE;
 RUN;
 
 /* Create the rowid of each and create macros */
@@ -82,7 +78,7 @@ PROC SORT; BY ae_start_date;
 RUN;
 
 title 'Adverse events for subject';
-ods graphics / reset width=8in height=6in;
+ods graphics / reset width=7in height=6in;
 proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
    /*--Draw the events--*/
    vector x=ae_stop_date y=rowid / xorigin=ae_start_date yorigin=rowid noarrowheads lineattrs=(thickness=9px) transparency=0 group=aesev name='sev';
@@ -111,13 +107,14 @@ proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
 RUN;
 
 TITLE 'Propotion des SOC termes';
-ods graphics / reset width=8in;
-PROC SGPANEL DATA=AE;
+ods graphics / reset width=7in;
+PROC SGPANEL DATA=result.AE;
    PANELBY TRTDESC / NOVARNAME COLUMNS=3;
    HBAR SOCTERM / STAT=FREQ nostatlabel CATEGORYORDER=RESPDESC baselineattrs=(thickness=0) seglabel seglabelattrs=(size=7);
    rowaxis display=(noline nolabel) valueattrs=(size=7);
 RUN;
 
-PROC FREQ DATA=AE;
+PROC FREQ DATA=result.AE;
     TABLES SOCTERM * TRTCD;
 RUN;
+
