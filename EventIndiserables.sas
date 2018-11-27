@@ -78,6 +78,10 @@ PROC SORT; BY ae_start_date;
 RUN;
 
 title 'Adverse events for subject';
+footnote '
+	They are getting a lot of long-term non-recurring side effects 
+	but that have low severity. 
+	But, also some short-term side effects that are of higher severity.';
 ods graphics / reset width=7in height=6in;
 proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
    /*--Draw the events--*/
@@ -104,9 +108,11 @@ proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
    /* Draw the legend */
    keylegend 'sev' / title='Severity:';
    discretelegend 'last_visit_line' 'treatment_start' / location=inside title='Legend' across=1;
+
 RUN;
 
-TITLE 'Propotion des SOC termes';
+title 'Propotion des SOC termes';
+footnote;
 ods graphics / reset width=7in;
 PROC SGPANEL DATA=result.AE;
    PANELBY TRTDESC / NOVARNAME COLUMNS=3;
@@ -114,7 +120,9 @@ PROC SGPANEL DATA=result.AE;
    rowaxis display=(noline nolabel) valueattrs=(size=7);
 RUN;
 
+footnote '
+	Gastrointestinal and infection issues are very common for the subjects, 
+	even for placebo users. But, there are a lot of skins issues for non-placebo users.';
 PROC FREQ DATA=result.AE;
     TABLES SOCTERM * TRTCD;
 RUN;
-
