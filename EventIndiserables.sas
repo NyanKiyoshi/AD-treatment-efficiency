@@ -32,6 +32,7 @@ MERGE
 
 /* Declare the date variables */
 FORMAT ae_start_date ae_stop_date treatment_start_date ddmmyyd10.;
+LABEL ae_start_date='Start date of the AE';
 
 /* Copy dates to our custom variables */
 ae_start_date = AESTDT;
@@ -62,6 +63,7 @@ RUN;
 DATA AE_SUBJECT;
    SET AE_SUBJECT;
    rowid=_n_;
+   CALL SYMPUT('USUBJID', USUBJID);
    CALL SYMPUT('ae_start_date', ae_start_date);
    CALL SYMPUT('lastVisitDt', lastVisitDt);
    CALL SYMPUT('firstVisitDt', firstVisitDt);
@@ -77,7 +79,7 @@ RUN;
 PROC SORT; BY ae_start_date;
 RUN;
 
-title 'Adverse events for subject';
+title "Adverse events for the subject #&USUBJID";
 footnote '
 	They are getting a lot of long-term non-recurring side effects 
 	but that have low severity. 
@@ -111,7 +113,7 @@ proc sgplot data=AE_SUBJECT noautolegend nocycleattrs;
 
 RUN;
 
-title 'Propotion des SOC termes';
+title 'SOC Terms Proportions over the subjects';
 footnote;
 ods graphics / reset width=7in;
 PROC SGPANEL DATA=result.AE;
@@ -121,8 +123,8 @@ PROC SGPANEL DATA=result.AE;
 RUN;
 
 footnote '
-	Gastrointestinal and infection issues are very common for the subjects, 
-	even for placebo users. But, there are a lot of skins issues for non-placebo users.';
+	Gastrointestinal and infection issues are very common for the subjects that are, 
+	even for placebo users. But, there are a lot of skins disorders for non-placebo users, which leads to a very common issue on the treatment.';
 PROC FREQ DATA=result.AE;
     TABLES SOCTERM * TRTCD;
 RUN;
